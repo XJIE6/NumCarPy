@@ -8,14 +8,19 @@ window_len = 1000
 size = (window_len, 800)
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
-cars = [[10000, 0]]
+
+fective_car = [10000, 0]
+cars = np.array([fective_car])
 
 BLACK = (0, 0, 0)
 GRAY = (127, 127, 127)
 WHITE = (255, 255, 255)
 
 def draw_car(x):
-    pygame.draw.rect(screen, BLACK, [x, 390, 40, 20], 0)
+    if (x >= 0 and x <=window_len):
+        pygame.draw.rect(screen, BLACK, [x, 390, 40, 20], 0)
+
+
 
 time = 1
 v0 = 20.0
@@ -44,9 +49,54 @@ def model_func(cur, next):
     return [xc + vc * time, vc + ac * time]
 
 def update_cars(cars):
-    #dummy version
-    if (cars == []):
+    if (cars.size == 0):
         return []
+    s = cars.compress([1, 0], axis=1).squeeze(1)
+    s1 = s[1:]
+    s2 = s[:-1]
+    v = cars.compress([0, 1], axis=1).squeeze(1)
+    v1 = v[1:]
+    v2 = v[:-1]
+    res_x = np.add(s1, np.multiply(v1, time))
+    s_star = np.add(
+        np.add(
+            np.divide(
+                np.multiply(
+                    np.subtract(v1, v2),
+                    v1),
+                2 * math.sqrt(a * b)),
+            np.multiply(v1, T)),
+        s0)
+    func_result = np.multiply(
+        a,
+        np.subtract(
+            1,
+            np.subtract(
+                np.power(
+                    np.divide(v1, v0),
+                    sigma),
+                np.power(
+                    np.divide(
+                        s_star,
+                        np.subtract(
+                            np.subtract(s2, s1),
+                            l)),
+                    2))))
+
+    res_v = np.add(v1, np.multiply(func_result, time))
+    res_x = np.extract(np.subtract(res_x, window_len) <= 0, res_x)
+    res_x = np.extract(res_x >= 0, res_x)
+    if (res_x.size != 0):
+        res_v = res_v[-res_x.size:]
+    else :
+        res_v = []
+    ans = np.column_stack((res_x, res_v))
+    if  (ans.size == 0) :
+        return np.array([fective_car])
+    return np.concatenate(([fective_car], ans))
+
+    '''
+    #dummy version
     res = [cars[0]]
     for i in range(len(cars)):
         if i != 0:
@@ -54,6 +104,8 @@ def update_cars(cars):
             if (cur[0] <= window_len):
                 res.append(cur)
     return res
+    '''
+
 k = 31
 while not done:
     for event in pygame.event.get():
@@ -61,7 +113,8 @@ while not done:
             done = True
     k += 1
     if (np.random.random_integers(0, 1) == 1 and k > 30):
-        cars.append([0, 0])
+        cars = np.concatenate((cars, [[0, 0]]))
+        print(cars)
         k = 0
     print(cars)
     cars = update_cars(cars)
