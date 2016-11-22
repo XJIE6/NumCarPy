@@ -4,10 +4,21 @@ import God
 import tqdm
 import numpy as np
 import random
+import Drawer
+import pygame
+import sys
+
+
+window_len = 1000
+size = (window_len, 800)
+screen = pygame.display.set_mode(size)
+pygame.init()
+
 
 map = Map.Map.get_map()
 god = God.God(map)
-
+drawer = Drawer.Drawer(map, (100, 100), 50, screen)
+clock = pygame.time.Clock()
 
 paths = [
     [map[0], map[6], map[2], map[4]],
@@ -22,10 +33,17 @@ paths = [
 ]
 
 N = 10000000
+car = None
 for i in tqdm.tqdm(range(N)):
-    if i % 10 == 0:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: sys.exit()
+    if i % 100 == 0:
         car = Car.Car(random.randint(10, 20), 0, 0, paths[random.randint(0, 7)].copy())
         car.start()
+    god.update()
+    drawer.draw()
+    pygame.display.flip()
+    clock.tick(1000)
 
 
 # path = [map[0], map[6], map[2], map[4]]

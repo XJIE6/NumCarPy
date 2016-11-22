@@ -2,7 +2,7 @@ import Car
 import Map
 class Object:
 
-    def __init__(self, type: str, id: int, next = None, len: int = 0, roads = None) -> ():
+    def __init__(self, type: str, id: int, next = None, len: int = 0, point1 = (0, 0), point2 = (0, 0), roads = None) -> ():
         self.cars = []
         self.id = id
         self.type = type
@@ -10,6 +10,8 @@ class Object:
         if type == "road":
             self.next = next
             self.len = len
+            self.point1 = point1
+            self.point2 = point2
 
         elif type == "crossroad":
             self.roads = roads

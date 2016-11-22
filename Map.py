@@ -14,14 +14,14 @@ class Map:
     DEAD.type = "dead"
     @staticmethod
     def get_map() -> [Object]:
-        left_o = Object.Object("road", 0, None, 1000)
-        left_i = Object.Object("road", 1, None, 1000)
-        right_o = Object.Object("road", 2, None, 1000)
-        right_i = Object.Object("road", 3, None, 1000)
-        top_o = Object.Object("road", 4, None, 1000)
-        top_i = Object.Object("road", 5, None, 1000)
-        bot_o = Object.Object("road", 6, None, 1000)
-        bot_i = Object.Object("road", 7, None, 1000)
+        left_o = Object.Object("road", 0, None, 1000, (0, 0), (0, 10))
+        left_i = Object.Object("road", 1, None, 1000, (1, 9), (1, 1))
+        right_o = Object.Object("road", 2, None, 1000, (10, 10), (10, 0))
+        right_i = Object.Object("road", 3, None, 1000, (9, 1), (9, 9))
+        top_o = Object.Object("road", 4, None, 1000, (10, 0), (0, 0))
+        top_i = Object.Object("road", 5, None, 1000, (1, 1), (9, 1))
+        bot_o = Object.Object("road", 6, None, 1000, (0, 10), (10, 10))
+        bot_i = Object.Object("road", 7, None, 1000, (9, 9), (1, 9))
         left_top = Object.Object("crossroad", 8, roads=[left_o, left_i, top_o, top_i])
         left_bot = Object.Object("crossroad", 9, roads=[left_o, left_i, bot_o, bot_i])
         right_top = Object.Object("crossroad", 10, roads=[right_o, right_i, top_o, top_i])
