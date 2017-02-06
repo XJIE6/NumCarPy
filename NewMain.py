@@ -2,7 +2,6 @@ import Map
 import Car
 import God
 import tqdm
-import numpy as np
 import random
 import Drawer
 import pygame
@@ -21,16 +20,19 @@ drawer = Drawer.Drawer(map, (100, 100), 50, screen)
 clock = pygame.time.Clock()
 
 paths = [
-    [map[0], map[6], map[2], map[4]],
-    [map[6], map[2], map[4], map[0]],
-    [map[2], map[4], map[0], map[6]],
-    [map[4], map[0], map[6], map[2]],
+    [map[12], map[0], map[6], map[2], map[4]],
+    [map[13], map[6], map[2], map[4], map[0]],
+    [map[15], map[2], map[4], map[0], map[6]],
+    [map[14], map[4], map[0], map[6], map[2]],
 
-    [map[1], map[5], map[3], map[7]],
-    [map[5], map[3], map[7], map[1]],
-    [map[3], map[7], map[1], map[5]],
-    [map[7], map[1], map[5], map[3]],
+    [map[13], map[1], map[5], map[3], map[7]],
+    [map[12], map[5], map[3], map[7], map[1]],
+    [map[14], map[3], map[7], map[1], map[5]],
+    [map[15], map[7], map[1], map[5], map[3]],
 ]
+
+def rand_color():
+    return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
 N = 10000000
 car = None
@@ -38,7 +40,7 @@ for i in tqdm.tqdm(range(N)):
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
     if i % 100 == 0:
-        car = Car.Car(random.randint(10, 20), 0, 0, paths[random.randint(0, 7)].copy())
+        car = Car.Car(rand_color(), random.randint(10, 20), 0, 0, paths[random.randint(0, 7)].copy())
         car.start()
     god.update()
     drawer.draw()

@@ -18,7 +18,7 @@ def add_inf(res: [Car], arr: [Car]) -> [Car]:
     return res
 
 class God:
-    INF = Car.Car(0, 1000000000, 0, [])
+    INF = Car.Car((0, 0, 0), 0, 1000000000, 0, [])
     TIME = 0.3
     T = 1.5
     A = 1.0
