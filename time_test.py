@@ -10,7 +10,7 @@ for i in tqdm.tqdm(range(N)):
     if i % int(N / 10) == 0:
         res.append(len(cars))
     k += 1
-    if (np.random.random_integers(0, 1) == 1 and k > max_k):
+    if (i % 100 == 0):
         cars = np.concatenate((cars, [[0, 0, main.get_speed()]]))
         k = 0
     cars = main.update_cars_fast(cars)
@@ -25,7 +25,7 @@ for i in tqdm.tqdm(range(N)):
     if i % int(N / 10) == 0:
         res.append(len(cars))
     k += 1
-    if (np.random.random_integers(0, 1) == 1 and k > max_k):
+    if (i % 100 == 0):
         cars = np.concatenate((cars, [[0, 0, main.get_speed()]]))
         k = 0
     cars = main.update_cars_slow(cars)

@@ -1,7 +1,8 @@
 import Object
 class Car:
 
-    def __init__(self, color, max_v: int, x: int, v: int, path: [Object]) -> ():
+
+    def __init__(self, max_v: int, x: int, v: int, path: [Object], color = (0, 0, 0)) -> ():
         self.color = color
         self.max_v = max_v
         self.x = x

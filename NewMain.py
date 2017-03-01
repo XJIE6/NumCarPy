@@ -16,7 +16,7 @@ pygame.init()
 
 map = Map.Map.get_map()
 god = God.God(map)
-drawer = Drawer.Drawer(map, (100, 100), 50, screen)
+drawer = Drawer.Drawer(map, (0, 0), 40, screen)
 clock = pygame.time.Clock()
 
 paths = [
@@ -40,7 +40,7 @@ for i in tqdm.tqdm(range(N)):
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
     if i % 100 == 0:
-        car = Car.Car(rand_color(), random.randint(10, 20), 0, 0, paths[random.randint(0, 7)].copy())
+        car = Car.Car(random.randint(10, 20), 0, 0, paths[random.randint(0, 7)].copy(), rand_color(), )
         car.start()
     god.update()
     drawer.draw()

@@ -18,7 +18,7 @@ def add_inf(res: [Car], arr: [Car]) -> [Car]:
     return res
 
 class God:
-    INF = Car.Car((0, 0, 0), 0, 1000000000, 0, [])
+    INF = Car.Car(1, 1000000000, 0, [], (0, 0, 0))
     TIME = 0.3
     T = 1.5
     A = 1.0
@@ -30,9 +30,36 @@ class God:
     def __init__(self, map: [Object]) -> ():
         self.map = map
 
+    def model_func(self, current, next):
+        x_current = current.x
+        v_current = current.v
+        v_max_current = current.max_v
+        x_next = next.x
+        v_next = next.v
+        s_star = x_next - x_current - self.L
+        s = (self.S0 +
+             v_current * self.T +
+             v_current * (v_current - v_next) / (2 * math.sqrt(self.A * self.B))
+             )
+        ac = self.A * (
+            1 -
+            (v_current / v_max_current) ** self.SIGMA -
+            (s / s_star) ** 2
+        )
+        current.x = x_current + v_current * self.TIME
+        current.v = max(min(v_current + ac * self.TIME, v_max_current), 0)
+
+    def slow_move(self, cars):
+        res = [cars[0]]
+        for i in range(len(cars)):
+            if i != 0:
+                self.model_func(cars[i], cars[i - 1])
+
     def move(self, cars: [Car]) -> ():
         if len(cars) == 0:
             return []
+
+        #print(len(cars) - len(list(filter(lambda obj: obj.type == "road", self.map))))
 
         v0 = list(map(lambda car: car.max_v, cars))
         s  = list(map(lambda car: car.x, cars))
@@ -73,7 +100,7 @@ class God:
         list(map(union, zip(cars[1:], res_x, res_v)))
 
     def update(self) -> ():
-        cars = reduce(add_inf, map(lambda obj: obj.cars, filter(lambda obj: obj.type == "road", self.map)), [])
-        self.move(cars)
+        cars = reduce(add_inf, map(lambda obj: obj.cars, filter(lambda obj: obj.type == 1, self.map)), [])
+        self.slow_move(cars)
         for obj in self.map:
             obj.update()

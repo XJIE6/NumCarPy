@@ -1,24 +1,27 @@
 import Car
 import Map
-class Object:
 
-    def __init__(self, type: str, id: int, next = None, len: int = 0, point1 = (0, 0), point2 = (0, 0), inRoads = None, outRoads = None) -> ():
+
+class Object:
+    def __init__(self, type: int, id: int, next=None, len: int = 0, point1=(0, 0), point2=(0, 0), inRoads=None,
+                 outRoads=None) -> ():
         self.cars = []
         self.id = id
         self.type = type
         self.k = 1
 
-        if type == "road":
+        if type == 1:
             self.next = next
             self.len = len
             self.point1 = point1
             self.point2 = point2
 
-        elif type == "crossroad":
+        elif type == 0:
             self.inRoads = {inRoads[0]: 0, inRoads[1]: 1, inRoads[2]: 2, inRoads[3]: 3}
-            self.outRoads = {outRoads[0]: 0, outRoads[1]: 1,outRoads[2]: 2, outRoads[3]: 3}
+            self.outRoads = {outRoads[0]: 0, outRoads[1]: 1, outRoads[2]: 2, outRoads[3]: 3}
+            self.point1 = point1
             self.cars = [[], [], [], []]
-            self.lock = [[0 for x in range(4)] for y in range(3)]
+            self.lock = [[None for x in range(4)] for y in range(3)]
             self.onRoad = [[], [], []]
 
     # def __init__(self, id: int, left: Object, right: Object, top: Object, bottom: Object, len: int = None) -> ():
@@ -56,29 +59,42 @@ class Object:
     def update(self) -> ():
         if len(self.cars) == 0:
             return
-        if self.type == "road":
-            if (self.cars[0].x > self.len):
-                self.cars[0].x = 0
-                self.next.add(self, self.cars.pop(0))
-        elif self.type == "crossroad":
+        if self.type == 1:
+
+            prepare = []
+            for car in self.cars:
+                if (car.x > self.len * 2) or (car.x < 0):
+                    prepare.append(car)
+                if car.x > self.len:
+                    car.x = 0
+                    self.next.add(self, car)
+                    prepare.append(car)
+
+            for car in prepare:
+                self.cars.remove(car)
+
+            # while (len(self.cars) > 0 and self.cars[0].x > self.len):
+            #     car = self.cars.pop()
+            #     self.next.add(self, car)
+
+        elif self.type == 0:
             self.k += 1
             if (self.k == 20):
                 self.upd()
                 self.crossroad()
                 self.k = 0
-            # while len(self.cars) > 0:
-            #     if len(self.cars[0].path) == 0:
-            #         Map.Map.DEAD.add(self.cars.pop(0))
-            #     else:
-            #         car = self.cars[0]
-            #         car.path[0].add(self.cars.pop(0))
-            #         car.path.pop(0)
-
+                # while len(self.cars) > 0:
+                #     if len(self.cars[0].path) == 0:
+                #         Map.Map.DEAD.add(self.cars.pop(0))
+                #     else:
+                #         car = self.cars[0]
+                #         car.path[0].add(self.cars.pop(0))
+                #         car.path.pop(0)
 
     def add(self, road, car: Car) -> ():
-        if self.type == "road":
+        if self.type == 1:
             self.cars.append(car)
-        elif self.type == "crossroad":
+        elif self.type == 0:
             rd = self.inRoads[road]
             self.cars[rd].append(car)
 
@@ -91,12 +107,11 @@ class Object:
         else:
             return 2
 
-
     def crossroad(self):
         cur = []
         for i in range(len(self.cars)):
             while len(self.cars[i]) > 0 and len(self.cars[i][0].path) == 0:
-                Map.Map.DEAD.add(self.cars[i].pop(0))
+                Map.Map.DEAD.add(self, self.cars[i].pop(0))
             if len(self.cars[i]) != 0:
                 car = self.cars[i][0]
                 cur.append((car, i, self.outRoads[car.path[0]]))
@@ -107,13 +122,13 @@ class Object:
             i = 0
             f = True
             while ((car[1] + i) % 4 != car[2]):
-                if self.lock[i][(car[1] + i) % 4] != 0:
+                if not (self.lock[i][(car[1] + i) % 4] is None):
                     f = False
                 i += 1
             if f == True:
                 i = 0
                 while ((car[1] + i) % 4 != car[2]):
-                    self.lock[i][(car[1] + i) % 4] = 1
+                    self.lock[i][(car[1] + i) % 4] = car
                     i += 1
                 self.cars[car[1]].pop(0)
                 self.onRoad[self.prior(car[1], car[2])].append(car[0])
@@ -123,6 +138,7 @@ class Object:
             if len(car.path) == 0:
                 Map.Map.DEAD.add(car)
             else:
+                car.x = 0
                 car.path[0].add(self, car)
                 car.path.pop(0)
         self.onRoad[0] = self.onRoad[1]
@@ -131,4 +147,4 @@ class Object:
 
         self.lock[0] = self.lock[1]
         self.lock[1] = self.lock[2]
-        self.lock[2] = [0, 0, 0, 0]
+        self.lock[2] = [None, None, None, None]
